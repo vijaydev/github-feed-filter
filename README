@@ -1,5 +1,5 @@
 GitHub Feeds were pretty useful until DHH decided to have CoffeeScript in Rails 3.1 :-)
 
-GitHub Feed Filter is right now a GreaseMonkey script that enables to view feeds filtered out by projects.
+GitHub Feed Filter is right now a GreaseMonkey script that enables to view feeds filtered out by projects. You can install the script from http://userscripts.org/scripts/show/101729
 
 TODO: Google Chrome Extension
