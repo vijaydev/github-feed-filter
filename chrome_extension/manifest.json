@@ -1,0 +1,12 @@
+{
+  "name": "GitHub Feed Filter",
+  "version": "1.0",
+  "description": "Enables filtering out GitHub feeds by projects, commits, comments and issues",
+  "content_scripts": [
+		{
+			"matches": ["https://github.com/", "https://github.com/dashboard", "https://github.com/#" ],
+			"js": ["jquery-1.4.2.min.js", "filter.js"],
+			"css": ["filter.css"]
+		}
+  ]
+}
