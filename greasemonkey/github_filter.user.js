@@ -96,7 +96,7 @@ var Ghf = {
 	},
 	show_panel: function() {
 		Ghf.$('div#your_feeds').remove();
-		Ghf.$('div.news').after(this.ui.top_bar + this.ui.body.join('') + this.ui.bottom_bar);
+		Ghf.$('div#your_repos').after(this.ui.top_bar + this.ui.body.join('') + this.ui.bottom_bar);
 	},
 	script_events: function() {
 		var self = this;
