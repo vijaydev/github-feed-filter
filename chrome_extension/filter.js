@@ -117,9 +117,8 @@ var Ghf = {
     srch != "" && items.filter(":not(:contains_ci('" + srch + "'))").hide();
   },
   monitor_page: function() {
-    $('div.news').ajaxComplete(function(evt, reqt, settings) {
-      if(/dashboard\/index/.test(settings.url)) { console.info("running ghf");
-        Ghf.run();}
+    $('div.news .pagination a').click(function() {
+      setTimeout(function() { Ghf.run(); }, 2000);
     });
   },
   hide_feeds: function() {
