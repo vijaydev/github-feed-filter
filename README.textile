@@ -1,8 +1,8 @@
-GitHub Feed Filter is available as a Google Chrome extension and as a GreaseMonkey user script.
+GitHub Feed Filter is available as a Google Chrome extension and as a Greasemonkey user script.
 
-It reads through the visible feeds in the News Feed section and lists them in the page just like Your Repos or Watched Repos. Clicking on a repository will filter out your News Feed to only include feeds from that repository. This filtering can be further extended to show only the feeds for Commits, Comments or Issues made in that repository. 
+It reads through the visible feeds in the News Feed section and lists them in the page just like Your Repos or Watched Repos. Clicking on a repository will filter out your News Feed to only include feeds from that repository. This filtering can be further extended to show only the feeds for commits, comments or issues made in that repository. 
 
 *Install*:
 
-"GreaseMonkey User Script":http://userscripts.org/scripts/show/101729
 "Google Chrome Extension":https://chrome.google.com/extensions/detail/jcpkhafkpnaljjbgdgbehajihicjalkc
+"GreaseMonkey User Script":http://userscripts.org/scripts/show/101729
