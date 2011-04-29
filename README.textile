@@ -5,4 +5,4 @@ It reads through the visible feeds in the News Feed section and lists them in th
 *Install*:
 
 "GreaseMonkey User Script":http://userscripts.org/scripts/show/101729
-Google Chrome Extension: Coming up..
+"Google Chrome Extension":https://chrome.google.com/extensions/detail.jcpkhafkpnaljjbgdgbehajihicjalkc
