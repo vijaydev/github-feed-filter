@@ -4,7 +4,7 @@ var Ghf = {
   init: function() {
     this.feeds = {};
     this.counts = { 'all': 0, 'commits': 0, 'comments': 0, 'issues': 0 };
-    this.ui = { body: [], bottom: "<div class='bottom-bar'> </div> </div>", top: "<div class='repos' id='your_feeds'> <div class='top-bar'> <h2 class='count'>News Feeds <em></em></h2> </div><div class='filter-bar'> <input class='filter_input' placeholder='Find a repository feed…' type='search'><ul class='repo_filterer'> <li class='all_repos'><a href='#' class='repo_filter filter_selected' rel='all'>All Feeds</a></li> <li><a href='#' class='repo_filter' rel='commits'>Commits</a></li> <li><a href='#' class='repo_filter' rel='comments'>Comments</a></li> <li><a href='#' class='repo_filter' rel='issues'>Issues</a></li> </ul> </div>" };
+    this.ui = { body: [], bottom: "<div class='bottom-bar'> </div> </div>", top: "<div class='repos' id='your_feeds'> <div class='top-bar'> <h2 class='count'>News Feed <em></em></h2> </div><div class='filter-bar'> <input class='filter_input' placeholder='Find a repository feed…' type='search'><ul class='repo_filterer'> <li class='all_repos'><a href='#' class='repo_filter filter_selected' rel='all'>All Feeds</a></li> <li><a href='#' class='repo_filter' rel='commits'>Commits</a></li> <li><a href='#' class='repo_filter' rel='comments'>Comments</a></li> <li><a href='#' class='repo_filter' rel='issues'>Issues</a></li> </ul> </div>" };
   },
   run: function() {
     this.init();
