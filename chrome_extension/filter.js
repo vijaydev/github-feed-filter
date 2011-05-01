@@ -86,14 +86,16 @@ var Ghf = {
   },
   attach_name_handlers: function() {
     var self = this;
-    $('#feed_listing li a').click(function() {
+    $('#feed_listing li a').click(function(evt) {
       self.hide_feeds();
       $.each(self.feeds[$(this).text()][$(this).siblings('span:visible').attr('rel')], self.show_feed_n);
+      evt.preventDefault();
+      evt.stopPropagation();
     });
   },
   setup_cat_filters: function() {
     var self = this;
-    $('#your_feeds .repo_filter').click(function() {
+    $('#your_feeds .repo_filter').click(function(evt) {
       var t = $(this), r = t.attr('rel');
       t.parents('ul').find('a').removeClass('filter_selected');
       t.addClass('filter_selected');
@@ -103,6 +105,8 @@ var Ghf = {
       $.each($('ul#feed_listing li:visible a'), function(i, item) {
         $.each(self.feeds[$(item).text()][r], self.show_feed_n);
       });
+      evt.preventDefault();
+      evt.stopPropagation();
     });
   },
   setup_search: function() {
