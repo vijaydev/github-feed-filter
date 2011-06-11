@@ -2,12 +2,16 @@ $.expr[':'].contains_ci = function(a, i, m) { return $(a).text().toUpperCase().i
 var Ghf = {
   feeds: {}, counts: {}, ui: {},
   init: function() {
+    this.searchterm = '';
+    this.rel = '';
     this.feeds = {};
     this.counts = { 'all': 0, 'commits': 0, 'comments': 0, 'issues': 0 };
     this.ui = { body: [], bottom: "<div class='bottom-bar'> </div> </div>", top: "<div class='repos' id='your_feeds'> <div class='top-bar'> <h2 class='count'>News Feed <em></em></h2> </div><div class='filter-bar'> <input class='filter_input' placeholder='Find a repository feed…' type='search'><ul class='repo_filterer'> <li class='all_repos'><a href='#' class='repo_filter filter_selected' rel='all'>All Feeds</a></li> <li><a href='#' class='repo_filter' rel='commits'>Commits</a></li> <li><a href='#' class='repo_filter' rel='comments'>Comments</a></li> <li><a href='#' class='repo_filter' rel='issues'>Issues</a></li> </ul> </div>" };
   },
   run: function() {
     this.init();
+    this.searchterm = $("#your_feeds .filter_input").val();
+    this.rel = $('#your_feeds .repo_filterer a.filter_selected').attr('rel');
     this.read_feeds();
     this.create_ui();
     this.show_ui();
@@ -83,6 +87,11 @@ var Ghf = {
     this.setup_search();
     this.attach_name_handlers();
     this.setup_cat_filters();
+
+    $("#your_feeds .filter_input").val(this.searchterm);
+    if(this.rel !== '') {
+      $('#your_feeds a.repo_filter[rel="' + this.rel + '"]').click();
+    }
   },
   attach_name_handlers: function() {
     var self = this;
@@ -110,8 +119,8 @@ var Ghf = {
     });
   },
   setup_search: function() {
-  var self = this;
-    $('#your_feeds .filter_input').val('').addClass('native').bind('keyup blur click', function() { self.search(this.value); });
+    var self = this;
+    $('#your_feeds .filter_input').addClass('native').bind('keyup blur click', function(e) { self.search(this.value); });
   },
   search: function(srch, rel) {
     var items = $('ul#feed_listing li').hide();
