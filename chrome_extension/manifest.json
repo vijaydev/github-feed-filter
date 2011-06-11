@@ -1,6 +1,6 @@
 {
   "name": "GitHub Feed Filter",
-  "version": "1.1",
+  "version": "1.2",
   "description": "Enables filtering out GitHub feeds by projects, commits, comments and issues",
   "icons": { "16": "ghf16.png", "48": "ghf48.png", "128": "ghf128.png" },
   "content_scripts": [
