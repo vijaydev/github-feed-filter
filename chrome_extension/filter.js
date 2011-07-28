@@ -4,6 +4,7 @@ var Ghf = {
   init: function() {
     this.searchterm = '';
     this.rel = '';
+    this.selected_item = '';
     this.feeds = {};
     this.counts = { 'all': 0, 'commits': 0, 'comments': 0, 'issues': 0 };
     this.ui = { body: [], bottom: "<div class='bottom-bar'> </div> </div>", top: "<div class='repos' id='your_feeds'> <div class='top-bar'> <h2 class='count'>News Feed <em></em></h2> </div><div class='filter-bar'> <input class='filter_input' placeholder='Find a repository feed…' type='search'><ul class='repo_filterer'> <li class='all_repos'><a href='#' class='repo_filter filter_selected' rel='all'>All Feeds</a></li> <li><a href='#' class='repo_filter' rel='commits'>Commits</a></li> <li><a href='#' class='repo_filter' rel='comments'>Comments</a></li> <li><a href='#' class='repo_filter' rel='issues'>Issues</a></li> </ul> </div>" };
@@ -12,6 +13,7 @@ var Ghf = {
     this.init();
     this.searchterm = $("#your_feeds .filter_input").val();
     this.rel = $('#your_feeds .repo_filterer a.filter_selected').attr('rel');
+    this.selected_item = $('#feed_listing li[selected="1"] span[class!="spancount"]').text();
     this.read_feeds();
     this.create_ui();
     this.show_ui();
@@ -66,6 +68,7 @@ var Ghf = {
   create_ui: function() {
     var self = this;
     var repos = self.Utils.keys(self.feeds);
+    self.ui.body.push('<div style="padding: 5px; font-size: 12px; text-align: right;" id="reset_filter"><a>Reset Filter</a></div>');
     self.ui.body.push('<ul id="feed_listing" class="repo_list">');
     $.each(repos, function(idx, repo) {
       var r = repo.split('/');
@@ -83,24 +86,57 @@ var Ghf = {
     $('div#your_repos').before(this.ui.top + this.ui.body.join('') + this.ui.bottom);
   },
   script_events: function() {
+    var self = this;
     this.set_spans('all');
     this.setup_search();
     this.attach_name_handlers();
     this.setup_cat_filters();
+    this.reset_filter_event();
 
     $("#your_feeds .filter_input").val(this.searchterm);
     if(this.rel !== '') {
       $('#your_feeds a.repo_filter[rel="' + this.rel + '"]').click();
     }
+    if(self.selected_item !== '') {
+      $.each($('#feed_listing li'), function(i, item) {
+        if(self.selected_item == $(item).find('span[class!="spancount"]').text()) {
+          $(this).find('a').click();
+        }
+      });
+    }
+  },
+  reset_filter_event: function() {
+    var self = this;
+    $('div#reset_filter').click(function() {
+      self.highlight_item();
+      self.hide_feeds();
+      var r = $('#your_feeds .filter_selected').attr('rel');
+      $.each($('ul#feed_listing li:visible a'), function(i, item) {
+        $.each(self.feeds[$(item).text()][r], self.show_feed_n);
+      });
+    });
   },
   attach_name_handlers: function() {
     var self = this;
     $('#feed_listing li a').click(function(evt) {
       self.hide_feeds();
+      self.highlight_item($(this).parent());
       $.each(self.feeds[$(this).text()][$(this).siblings('span:visible').attr('rel')], self.show_feed_n);
       evt.preventDefault();
       evt.stopPropagation();
     });
+  },
+  highlight_item: function(to_hl) {
+    $.each($('#feed_listing li'), function(i, item) {
+      if($(item) !== to_hl) {
+        $(item).css('background-color', '#FFF');
+        $(item).removeAttr('selected');
+      }
+    });
+    if(to_hl !== undefined) {
+      to_hl.css('background-color', '#F2F0B6');
+      to_hl.attr('selected', '1');
+    }
   },
   setup_cat_filters: function() {
     var self = this;
@@ -111,7 +147,11 @@ var Ghf = {
       self.set_spans(r);
       self.search($('#your_feeds .filter_input').val(), r);
       self.hide_feeds();
-      $.each($('ul#feed_listing li:visible a'), function(i, item) {
+      if($('ul#feed_listing li[selected="1"]:visible').length > 0)
+        item_selector = 'ul#feed_listing li[selected="1"]:visible a';
+      else
+        item_selector = 'ul#feed_listing li:visible a';
+      $.each($(item_selector), function(i, item) {
         $.each(self.feeds[$(item).text()][r], self.show_feed_n);
       });
       evt.preventDefault();
