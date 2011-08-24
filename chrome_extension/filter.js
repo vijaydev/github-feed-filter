@@ -1,11 +1,12 @@
 $.expr[':'].contains_ci = function(a, i, m) { return $(a).text().toUpperCase().indexOf(m[3].toUpperCase()) >= 0; };
 var Ghf = {
-  feeds: {}, counts: {}, ui: {},
+  feeds: {}, counts: {}, ui: {}, timer_id: '',
   init: function() {
     this.searchterm = '';
     this.rel = '';
     this.selected_item = '';
     this.feeds = {};
+    this.oldcount = this.counts['all'] || 0;
     this.counts = { 'all': 0, 'commits': 0, 'comments': 0, 'issues': 0 };
     this.ui = { body: [], bottom: "<div class='bottom-bar'> </div> </div>", top: "<div class='repos' id='your_feeds'> <div class='top-bar'> <h2 class='count'>News Feed <em></em></h2> </div><div class='filter-bar'> <input class='filter_input' placeholder='Find a repository feed…' type='search'><ul class='repo_filterer'> <li class='all_repos'><a href='#' class='repo_filter filter_selected' rel='all'>All Feeds</a></li> <li><a href='#' class='repo_filter' rel='commits'>Commits</a></li> <li><a href='#' class='repo_filter' rel='comments'>Comments</a></li> <li><a href='#' class='repo_filter' rel='issues'>Issues</a></li> </ul> </div>" };
   },
@@ -14,7 +15,21 @@ var Ghf = {
     this.searchterm = $("#your_feeds .filter_input").val();
     this.rel = $('#your_feeds .repo_filterer a.filter_selected').attr('rel');
     this.selected_item = $('#feed_listing li[selected="1"] span[class!="spancount"]').text();
+    if(!this.read())
+      this.timer_id = setInterval(this.read(), 1000);
+  },
+  read: function() {
     this.read_feeds();
+    if(this.oldcount < this.counts['all']) {
+      if(this.timer_id !== undefined)
+        clearInterval(this.timer_id);
+      this.oldcount = this.counts['all'];
+      this.act();
+      return true;
+    }
+    return false;
+  },
+  act: function() {
     this.create_ui();
     this.show_ui();
     this.script_events();
