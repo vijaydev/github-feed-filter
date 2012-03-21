@@ -6,3 +6,9 @@
   padding:0px 2px 5px 0 !important;
   color:#99A4AA !important; font-size:14px !important;
 }
+#dashboard ul.repo_list li {
+  border-bottom: 1px solid #E5E5E5;
+}
+#dashboard ul.repo_list li a {
+  border-bottom: none !important;
+}

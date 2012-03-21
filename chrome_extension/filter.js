@@ -8,7 +8,7 @@ var Ghf = {
     this.feeds = {};
     this.oldcount = this.counts['all'] || 0;
     this.counts = { 'all': 0, 'commits': 0, 'comments': 0, 'issues': 0 };
-    this.ui = { body: [], bottom: "<div class='bottom-bar'> </div> </div>", top: "<div class='repos' id='your_feeds'> <div class='top-bar'> <h2 class='count'>News Feed <em></em></h2> </div><div class='filter-bar'> <input class='filter_input' placeholder='Find a repository feed…' type='search'><ul class='repo_filterer'> <li class='all_repos'><a href='#' class='repo_filter filter_selected' rel='all'>All Feeds</a></li> <li><a href='#' class='repo_filter' rel='commits'>Commits</a></li> <li><a href='#' class='repo_filter' rel='comments'>Comments</a></li> <li><a href='#' class='repo_filter' rel='issues'>Issues</a></li> </ul> </div>" };
+    this.ui = { body: [], bottom: "</div> </div>", top: "<div class='repos' id='your_feeds'> <div class='top-bar'> <h2 class='count'>News Feed <em></em></h2> </div><div class='filter-bar'> <input class='filter_input' placeholder='Find a repository feed…' type='search'><ul class='repo_filterer'> <li class='all_repos'><a href='#' class='repo_filter filter_selected' rel='all'>All Feeds</a></li> <li><a href='#' class='repo_filter' rel='commits'>Commits</a></li> <li><a href='#' class='repo_filter' rel='comments'>Comments</a></li> <li><a href='#' class='repo_filter' rel='issues'>Issues</a></li> </ul> </div>" };
   },
   run: function() {
     this.init();
@@ -88,7 +88,7 @@ var Ghf = {
     $.each(repos, function(idx, repo) {
       var r = repo.split('/');
       var cats = self.Utils.keys(self.feeds[repo]);
-      self.ui.body.push('<li class="public ' + cats.join(' ') + '"><a class="feedlink" href="#"><span class="owner">' + r[0] + '</span>/<span class="repo">' + r[1] + '</span></a>');
+      self.ui.body.push('<li class="public ' + cats.join(' ') + '"><a class="feedlink" href="#"><span class="mini-icon public-repo"></span><span class="owner">' + r[0] + '</span>/<span class="repo">' + r[1] + '</span></a>');
       $.each(cats, function(idx, val) {
         self.ui.body.push('<span class="spancount" rel="' + val + '">(' + self.feeds[repo][val].length + ')</span>');
       });
