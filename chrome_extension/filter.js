@@ -43,6 +43,10 @@ var Ghf = {
     }
   },
   add_feed: function(name, key, idx) {
+    if(name.indexOf("@") != -1)
+      name = name.split("@")[0];
+    if(name.indexOf("#") != -1)
+      name = name.split("#")[0];
     var f = this.feeds[name];
     if(f === undefined) {
       f = { all: [idx] };
@@ -64,20 +68,11 @@ var Ghf = {
     var self = this;
     $('div.alert').each(function(idx) {
       var title = $(this).find('div.title');
-      var cat = $(this).attr('class').split(' ')[1], x = -1;
-      switch(cat) {
-        case 'issues_opened': case 'issues_reopened': case 'issues_closed':
-          x = 2, cat = 'issues';
-        break;
-        case 'issues_comment': case 'commit_comment':
-          x = cat === 'issues_comment' ? 2 : 1, cat = 'comments';
-        break;
-        case 'push':
-          x = 1, cat = 'commits';
-        break;
-      }
-      if(x != -1)
-        self.add_feed($(title.find('a')[x]).html(), cat, idx);
+      var cat = $(this).attr('class').split(' ')[1];
+      if(cat === 'push') cat = 'commits';
+      else if(cat.indexOf("_comment") != -1) cat = 'comments';
+      else if(cat.indexOf("issues_") == 0) cat = 'issues';
+      self.add_feed($(title.find('a')[1]).html(), cat, idx);
     });
   },
   create_ui: function() {
@@ -88,7 +83,7 @@ var Ghf = {
     $.each(repos, function(idx, repo) {
       var r = repo.split('/');
       var cats = self.Utils.keys(self.feeds[repo]);
-      self.ui.body.push('<li class="public ' + cats.join(' ') + '"><a class="feedlink" href="#"><span class="mini-icon public-repo"></span><span class="owner">' + r[0] + '</span>/<span class="repo">' + r[1] + '</span></a>');
+      self.ui.body.push('<li class="public ' + cats.join(' ') + '"><a class="feedlink" href="#"><span class="mini-icon mini-icon-public-repo"></span><span class="owner">' + r[0] + '</span>/<span class="repo">' + r[1] + '</span></a>');
       $.each(cats, function(idx, val) {
         self.ui.body.push('<span class="spancount" rel="' + val + '">(' + self.feeds[repo][val].length + ')</span>');
       });
