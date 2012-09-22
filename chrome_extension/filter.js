@@ -43,6 +43,11 @@ var Ghf = {
     }
   },
   add_feed: function(name, key, idx) {
+    if(key === 'push') key = 'commits';
+    else if(key.indexOf("_comment") != -1) key = 'comments';
+    else if(key.indexOf("issues_") == 0) key = 'issues';
+    else return;
+
     if(name.indexOf("@") != -1)
       name = name.split("@")[0];
     if(name.indexOf("#") != -1)
@@ -69,9 +74,6 @@ var Ghf = {
     $('div.alert').each(function(idx) {
       var title = $(this).find('div.title');
       var cat = $(this).attr('class').split(' ')[1];
-      if(cat === 'push') cat = 'commits';
-      else if(cat.indexOf("_comment") != -1) cat = 'comments';
-      else if(cat.indexOf("issues_") == 0) cat = 'issues';
       self.add_feed($(title.find('a')[1]).html(), cat, idx);
     });
   },
