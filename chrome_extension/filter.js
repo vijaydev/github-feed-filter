@@ -8,12 +8,12 @@ var Ghf = {
     this.feeds = {};
     this.oldcount = this.counts['all'] || 0;
     this.counts = { 'all': 0, 'commits': 0, 'comments': 0, 'issues': 0 };
-    this.ui = { body: [], bottom: "</div> </div>", top: "<div class='repos' id='your_feeds'> <div class='top-bar'> <h2 class='count'>News Feed <em></em></h2> </div><div class='filter-bar'> <input class='filter_input' placeholder='Find a repository feed…' type='search'><ul class='repo_filterer'> <li class='all_repos'><a href='#' class='repo_filter filter_selected' rel='all'>All Feeds</a></li> <li><a href='#' class='repo_filter' rel='commits'>Commits</a></li> <li><a href='#' class='repo_filter' rel='comments'>Comments</a></li> <li><a href='#' class='repo_filter' rel='issues'>Issues</a></li> </ul> </div>" };
+    this.ui = { body: [], bottom: "</div> </div></div>", top: "<div class='repos box box-small' id='your_feeds'> <div class='box-header'> <h3 class='box-title'>News Feed <span class='box-title-count'></span></h3> </div><div class='box-body'><div class='filter-repos filter-bar'> <input class='filter-input js-filterable-field' placeholder='Find a repository feed…' type='text'><ul class='repo-filterer'> <li class='all_repos'><a href='javascript:;' class='repo-filter js-repo-filter-tab filter-selected' rel='all'>All Feeds</a></li> <li><a href='javascript:;' class='js-repo-filter-tab repo-filter' rel='commits'>Commits</a></li> <li><a href='javascript:;' class='js-repo-filter-tab repo-filter' rel='comments'>Comments</a></li> <li><a href='javascript:;' class='js-repo-filter-tab repo-filter' rel='issues'>Issues</a></li> </ul></div>" };
   },
   run: function() {
     this.init();
-    this.searchterm = $("#your_feeds .filter_input").val();
-    this.rel = $('#your_feeds .repo_filterer a.filter_selected').attr('rel');
+    this.searchterm = $("#your_feeds .filter-input").val();
+    this.rel = $('#your_feeds .repo-filterer a.filter-selected').attr('rel');
     this.selected_item = $('#feed_listing li[selected="1"] span[class!="spancount"]').text();
     if(!this.read())
       this.timer_id = setInterval(this.read(), 1000);
@@ -81,21 +81,21 @@ var Ghf = {
     var self = this;
     var repos = self.Utils.keys(self.feeds);
     self.ui.body.push('<div style="padding: 5px; font-size: 12px; text-align: right;" id="reset_filter"><a>Reset Filter</a></div>');
-    self.ui.body.push('<ul id="feed_listing" class="repo_list">');
+    self.ui.body.push('<ul id="feed_listing" class="repo-list js-repo-list">');
     $.each(repos, function(idx, repo) {
       var r = repo.split('/');
       var cats = self.Utils.keys(self.feeds[repo]);
-      self.ui.body.push('<li class="public ' + cats.join(' ') + '"><a class="feedlink" href="#"><span class="mini-icon mini-icon-public-repo"></span><span class="owner">' + r[0] + '</span>/<span class="repo">' + r[1] + '</span></a>');
+      self.ui.body.push('<li class="public ' + cats.join(' ') + '"><a class="feedlink repo-list-item css-truncate" data-userrepo="' + r[0] + "/" + r[1] + '" href="#"><span class="repo-icon octicon octicon-repo"></span><span class="owner">' + r[0] + '</span>/<span class="repo">' + r[1] + '</span>');
       $.each(cats, function(idx, val) {
-        self.ui.body.push('<span class="spancount" rel="' + val + '">(' + self.feeds[repo][val].length + ')</span>');
+        self.ui.body.push('<span class="spancount stars" rel="' + val + '">(' + self.feeds[repo][val].length + ')</span>');
       });
-      self.ui.body.push('</li>');
+      self.ui.body.push('</a></li>');
     });
     self.ui.body.push('</ul>');
   },
   show_ui: function() {
     $('div#your_feeds').remove();
-    $('div#your_repos').before(this.ui.top + this.ui.body.join('') + this.ui.bottom);
+    $('.dashboard-sidebar').prepend(this.ui.top + this.ui.body.join('') + this.ui.bottom);
   },
   script_events: function() {
     var self = this;
@@ -105,9 +105,9 @@ var Ghf = {
     this.setup_cat_filters();
     this.reset_filter_event();
 
-    $("#your_feeds .filter_input").val(this.searchterm);
+    $("#your_feeds .filter-input").val(this.searchterm);
     if(this.rel !== '') {
-      $('#your_feeds a.repo_filter[rel="' + this.rel + '"]').click();
+      $('#your_feeds a.repo-filter[rel="' + this.rel + '"]').click();
     }
     if(self.selected_item !== '') {
       $.each($('#feed_listing li'), function(i, item) {
@@ -122,9 +122,9 @@ var Ghf = {
     $('div#reset_filter').click(function() {
       self.highlight_item();
       self.hide_feeds();
-      var r = $('#your_feeds .filter_selected').attr('rel');
+      var r = $('#your_feeds .filter-selected').attr('rel');
       $.each($('ul#feed_listing li:visible a'), function(i, item) {
-        $.each(self.feeds[$(item).text()][r], self.show_feed_n);
+        $.each(self.feeds[$(item).data('userrepo')][r], self.show_feed_n);
       });
     });
   },
@@ -133,7 +133,7 @@ var Ghf = {
     $('#feed_listing li a').click(function(evt) {
       self.hide_feeds();
       self.highlight_item($(this).parent());
-      $.each(self.feeds[$(this).text()][$(this).siblings('span:visible').attr('rel')], self.show_feed_n);
+      $.each(self.feeds[$(this).data('userrepo')][$(this).children('span.stars:visible').attr('rel')], self.show_feed_n);
       evt.preventDefault();
       evt.stopPropagation();
     });
@@ -152,19 +152,19 @@ var Ghf = {
   },
   setup_cat_filters: function() {
     var self = this;
-    $('#your_feeds .repo_filter').click(function(evt) {
+    $('#your_feeds .repo-filter').click(function(evt) {
       var t = $(this), r = t.attr('rel');
-      t.parents('ul').find('a').removeClass('filter_selected');
-      t.addClass('filter_selected');
+      t.parents('ul').find('a').removeClass('filter-selected');
+      t.addClass('filter-selected');
       self.set_spans(r);
-      self.search($('#your_feeds .filter_input').val(), r);
+      self.search($('#your_feeds .filter-input').val(), r);
       self.hide_feeds();
       if($('ul#feed_listing li[selected="1"]:visible').length > 0)
         item_selector = 'ul#feed_listing li[selected="1"]:visible a';
       else
         item_selector = 'ul#feed_listing li:visible a';
       $.each($(item_selector), function(i, item) {
-        $.each(self.feeds[$(item).text()][r], self.show_feed_n);
+        $.each(self.feeds[$(item).data('userrepo')][r], self.show_feed_n);
       });
       evt.preventDefault();
       evt.stopPropagation();
@@ -172,12 +172,12 @@ var Ghf = {
   },
   setup_search: function() {
     var self = this;
-    $('#your_feeds .filter_input').addClass('native').bind('keyup blur click', function(e) { self.search(this.value); });
+    $('#your_feeds .filter-input').addClass('native').bind('keyup blur click', function(e) { self.search(this.value); });
   },
   search: function(srch, rel) {
     var items = $('ul#feed_listing li').hide();
     if(!rel)
-      rel = $('#your_feeds .repo_filterer a.filter_selected').attr('rel');
+      rel = $('#your_feeds .repo-filterer a.filter-selected').attr('rel');
     $('ul#feed_listing').find('li.' + rel).show();
     srch != "" && items.filter(":not(:contains_ci('" + srch + "'))").hide();
   },
@@ -193,7 +193,7 @@ var Ghf = {
     $('div.alert:eq(' + n + ')').show();
   },
   set_count: function(n) {
-    $('#your_feeds h2.count em').html('(' + n + ')');
+    $('#your_feeds h3.box-title span').html('(' + n + ')');
   },
   set_spans: function(rel) {
     this.set_count(this.counts[rel]);
