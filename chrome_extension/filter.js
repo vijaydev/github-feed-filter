@@ -8,7 +8,7 @@ var Ghf = {
     this.feeds = {};
     this.oldcount = this.counts['all'] || 0;
     this.counts = { 'all': 0, 'commits': 0, 'comments': 0, 'issues': 0 };
-    this.ui = { body: [], bottom: "</div> </div></div>", top: "<div class='repos box box-small' id='your_feeds'> <div class='box-header'> <h3 class='box-title'>News Feed <span class='box-title-count'></span></h3> </div><div class='box-body'><div class='filter-repos filter-bar'> <input class='filter-input js-filterable-field' placeholder='Find a repository feed…' type='text'><ul class='repo-filterer'> <li class='all_repos'><a href='javascript:;' class='repo-filter js-repo-filter-tab filter-selected' rel='all'>All Feeds</a></li> <li><a href='javascript:;' class='js-repo-filter-tab repo-filter' rel='commits'>Commits</a></li> <li><a href='javascript:;' class='js-repo-filter-tab repo-filter' rel='comments'>Comments</a></li> <li><a href='javascript:;' class='js-repo-filter-tab repo-filter' rel='issues'>Issues</a></li> </ul></div>" };
+    this.ui = { body: [], bottom: "</div> </div></div>", top: "<div class='repos box box-small' id='your_feeds'> <div class='box-header'> <h3 class='box-title'>News Feed <span class='box-title-count'></span></h3> </div><div class='box-body'><div class='filter-repos filter-bar'> <input class='filter-input js-filterable-field' placeholder='Find a repository feed…' type='text'><ul class='repo-filterer'> <li class='all_repos'><a href='#' class='repo-filter js-repo-filter-tab filter-selected' rel='all'>All Feeds</a></li> <li><a href='#' class='js-repo-filter-tab repo-filter' rel='commits'>Commits</a></li> <li><a href='#' class='js-repo-filter-tab repo-filter' rel='comments'>Comments</a></li> <li><a href='#' class='js-repo-filter-tab repo-filter' rel='issues'>Issues</a></li> </ul></div>" };
   },
   run: function() {
     this.init();
@@ -42,11 +42,16 @@ var Ghf = {
       return keys;
     }
   },
-  add_feed: function(name, key, idx) {
-    if(key === 'push') key = 'commits';
-    else if(key.indexOf("_comment") != -1) key = 'comments';
-    else if(key.indexOf("issues_") == 0) key = 'issues';
-    else return;
+  add_feed: function(linkElements, key, idx) {
+    if(key === 'push') {
+      key = 'commits';
+      name = $(linkElements[2]).html();
+    } else {
+      name = $(linkElements[1]).html();
+      if(key.indexOf("_comment") != -1) key = 'comments';
+      else if(key.indexOf("issues_") == 0) key = 'issues';
+      else return;
+    }
 
     if(name.indexOf("@") != -1)
       name = name.split("@")[0];
@@ -74,7 +79,7 @@ var Ghf = {
     $('div.alert').each(function(idx) {
       var title = $(this).find('div.title');
       var cat = $(this).attr('class').split(' ')[1];
-      self.add_feed($(title.find('a')[1]).html(), cat, idx);
+      self.add_feed($(title.find('a')), cat, idx);
     });
   },
   create_ui: function() {
@@ -124,7 +129,7 @@ var Ghf = {
       self.hide_feeds();
       var r = $('#your_feeds .filter-selected').attr('rel');
       $.each($('ul#feed_listing li:visible a'), function(i, item) {
-        $.each(self.feeds[$(item).data('userrepo')][r], self.show_feed_n);
+        $.each(self.feeds[$(item).attr('data-userrepo')][r], self.show_feed_n);
       });
     });
   },
@@ -133,7 +138,7 @@ var Ghf = {
     $('#feed_listing li a').click(function(evt) {
       self.hide_feeds();
       self.highlight_item($(this).parent());
-      $.each(self.feeds[$(this).data('userrepo')][$(this).children('span.stars:visible').attr('rel')], self.show_feed_n);
+      $.each(self.feeds[$(this).attr('data-userrepo')][$(this).children('span.stars:visible').attr('rel')], self.show_feed_n);
       evt.preventDefault();
       evt.stopPropagation();
     });
@@ -164,7 +169,7 @@ var Ghf = {
       else
         item_selector = 'ul#feed_listing li:visible a';
       $.each($(item_selector), function(i, item) {
-        $.each(self.feeds[$(item).data('userrepo')][r], self.show_feed_n);
+        $.each(self.feeds[$(item).attr('data-userrepo')][r], self.show_feed_n);
       });
       evt.preventDefault();
       evt.stopPropagation();
@@ -193,7 +198,7 @@ var Ghf = {
     $('div.alert:eq(' + n + ')').show();
   },
   set_count: function(n) {
-    $('#your_feeds h3.box-title span').html('(' + n + ')');
+    $('span.box-title-count').html('(' + n + ')');
   },
   set_spans: function(rel) {
     this.set_count(this.counts[rel]);
