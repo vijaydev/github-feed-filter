@@ -8,7 +8,8 @@ var Ghf = {
     this.feeds = {};
     this.oldcount = this.counts['all'] || 0;
     this.counts = { 'all': 0, 'commits': 0, 'comments': 0, 'issues': 0 };
-    this.ui = { body: [], bottom: "</div> </div></div>", top: "<div class='repos box box-small' id='your_feeds'> <div class='box-header'> <h3 class='box-title'>News Feed <span class='box-title-count'></span></h3> </div><div class='box-body'><div class='filter-repos filter-bar'> <input class='filter-input js-filterable-field' placeholder='Find a repository feed…' type='text'><ul class='repo-filterer'> <li class='all_repos'><a href='#' class='repo-filter js-repo-filter-tab filter-selected' rel='all'>All Feeds</a></li> <li><a href='#' class='js-repo-filter-tab repo-filter' rel='commits'>Commits</a></li> <li><a href='#' class='js-repo-filter-tab repo-filter' rel='comments'>Comments</a></li> <li><a href='#' class='js-repo-filter-tab repo-filter' rel='issues'>Issues</a></li> </ul></div>" };
+    this.ui = { body: [], bottom: "</div> </div></div>", top: "<div class='repos boxed-group flush' id='your_feeds'> <h3>News Feed <span class='box-title-count'></span></h3> <div class='boxed-group-inner'><div class='filter-repos filter-bar'> <input class='filter-input js-filterable-field' placeholder='Find a repository feed…' type='text'><ul class='repo-filterer'> <li class='all_repos'><a href='#' class='repo-filter js-repo-filter-tab filter-selected' rel='all'>All Feeds</a></li> <li><a href='#' class='js-repo-filter-tab repo-filter' rel='commits'>Commits</a></li> <li><a href='#' class='js-repo-filter-tab repo-filter' rel='comments'>Comments</a></li> <li><a href='#' class='js-repo-filter-tab repo-filter' rel='issues'>Issues</a></li> </ul></div>" };
+
   },
   run: function() {
     this.init();
@@ -86,11 +87,11 @@ var Ghf = {
     var self = this;
     var repos = self.Utils.keys(self.feeds);
     self.ui.body.push('<div style="padding: 5px; font-size: 12px; text-align: right;" id="reset_filter"><a>Reset Filter</a></div>');
-    self.ui.body.push('<ul id="feed_listing" class="repo-list js-repo-list">');
+    self.ui.body.push('<ul id="feed_listing" class="repo-list js-repo-list mini-repo-list">');
     $.each(repos, function(idx, repo) {
       var r = repo.split('/');
       var cats = self.Utils.keys(self.feeds[repo]);
-      self.ui.body.push('<li class="public ' + cats.join(' ') + '"><a class="feedlink repo-list-item css-truncate" data-userrepo="' + r[0] + "/" + r[1] + '" href="#"><span class="repo-icon octicon octicon-repo"></span><span class="owner">' + r[0] + '</span>/<span class="repo">' + r[1] + '</span>');
+      self.ui.body.push('<li class="public ' + cats.join(' ') + '"><a class="mini-repo-list-item css-truncate" data-userrepo="' + r[0] + "/" + r[1] + '" href="#"><span class="repo-icon octicon octicon-repo"></span><span class="owner">' + r[0] + '</span>/<span class="repo">' + r[1] + '</span>');
       $.each(cats, function(idx, val) {
         self.ui.body.push('<span class="spancount stars" rel="' + val + '">(' + self.feeds[repo][val].length + ')</span>');
       });
