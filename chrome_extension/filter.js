@@ -1,4 +1,3 @@
-$.expr[':'].contains_ci = function(a, i, m) { return $(a).text().toUpperCase().indexOf(m[3].toUpperCase()) >= 0; };
 var Ghf = {
   feeds: {}, counts: {}, ui: {}, timer_id: '',
   init: function() {
@@ -9,7 +8,6 @@ var Ghf = {
     this.oldcount = this.counts['all'] || 0;
     this.counts = { 'all': 0, 'commits': 0, 'comments': 0, 'issues': 0 };
     this.ui = { body: [], bottom: "</div> </div></div>", top: "<div class='repos boxed-group flush' id='your_feeds'> <h3>News Feed <span class='box-title-count'></span></h3> <div class='boxed-group-inner'><div class='filter-repos filter-bar'> <input class='filter-input js-filterable-field' placeholder='Find a repository feed…' id='your-feeds-filter' type='text'><ul class='repo-filterer'> <li class='all_repos'><a href='#' class='repo-filter js-repo-filter-tab filter-selected' rel='all'>All Feeds</a></li> <li><a href='#' class='js-repo-filter-tab repo-filter' rel='commits'>Commits</a></li> <li><a href='#' class='js-repo-filter-tab repo-filter' rel='comments'>Comments</a></li> <li><a href='#' class='js-repo-filter-tab repo-filter' rel='issues'>Issues</a></li> </ul></div>" };
-
   },
   run: function() {
     this.init();
@@ -87,7 +85,7 @@ var Ghf = {
     var self = this;
     var repos = self.Utils.keys(self.feeds);
     self.ui.body.push('<div style="padding: 5px; font-size: 12px; text-align: right;" id="reset_filter"><a>Reset Filter</a></div>');
-    self.ui.body.push('<ul id="feed_listing" class="repo-list js-repo-list mini-repo-list" data-filterable-for="your-feeds-filter">');
+    self.ui.body.push('<ul id="feed_listing" class="repo-list js-repo-list mini-repo-list">');
     $.each(repos, function(idx, repo) {
       var r = repo.split('/');
       var cats = self.Utils.keys(self.feeds[repo]);
@@ -165,28 +163,28 @@ var Ghf = {
       t.addClass('filter-selected');
       self.set_spans(r);
       self.search($('#your_feeds .filter-input').val(), r);
-      self.hide_feeds();
-      if($('ul#feed_listing li[selected="1"]:visible').length > 0)
-        item_selector = 'ul#feed_listing li[selected="1"]:visible a';
-      else
-        item_selector = 'ul#feed_listing li:visible a';
-      $.each($(item_selector), function(i, item) {
-        $.each(self.feeds[$(item).attr('data-userrepo')][r], self.show_feed_n);
-      });
       evt.preventDefault();
       evt.stopPropagation();
     });
   },
+  refresh_feeds: function(rel) {
+    var self = this, item_selector = 'ul#feed_listing li:visible a';
+    this.hide_feeds();
+    if($('ul#feed_listing li[selected="1"]').length > 0)
+      item_selector = 'ul#feed_listing li[selected="1"] a';
+    $.each($(item_selector), function(i, item) {
+      $.each(self.feeds[$(item).attr('data-userrepo')][rel] || [], self.show_feed_n);
+    });
+  },
   setup_search: function() {
     var self = this;
-    $('#your_feeds .filter-input').addClass('native').bind('keyup blur click', function(e) { self.search(this.value); });
+    $('#your_feeds .filter-input').bind('keyup', function(evt) { self.search(this.value); evt.preventDefault(); evt.stopPropagation(); });
   },
   search: function(srch, rel) {
-    var items = $('ul#feed_listing li').hide();
-    if(!rel)
-      rel = $('#your_feeds .repo-filterer a.filter-selected').attr('rel');
-    $('ul#feed_listing').find('li.' + rel).show();
-    srch != "" && items.filter(":not(:contains_ci('" + srch + "'))").hide();
+    $('ul#feed_listing li').hide();
+    rel = rel || $('#your_feeds .repo-filterer a.filter-selected').attr('rel');
+    $('ul#feed_listing').find('li.' + rel).filter(":contains('" + srch + "')").show();
+    this.refresh_feeds(rel);
   },
   monitor_page: function() {
     $('div.news .pagination a').click(function() {
